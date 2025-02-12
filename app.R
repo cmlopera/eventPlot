@@ -1,5 +1,6 @@
 # Load packages used by the app. Install missing packages, if needed.
 library(shiny)
+library(devtools)
 library(readxl)
 library(shinyjs)
 library(SMRD)
