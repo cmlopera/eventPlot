@@ -452,7 +452,7 @@ server <- function(input, output, session) {
       column(
         width = 12,
         selectInput("col_respuesta", "Selecciona la(s) columna(s) de la respuesta:",
-                    choices = choices, multiple = T, selected = choices[2:3])
+                    choices = choices, multiple = T, selected = choices[2])
       )
     )
   })
