@@ -254,13 +254,13 @@ server <- function(input, output, session) {
     return("No Especificado")
   }
   
-  bases_de_datos <- c(
+  bases_de_datos <- sort(c(
     "at7987", "bearinga", "bearingcage", "componentd", "deviceh", "devicen", "fan", "lfp1370", 
     "turbine","locomotivecontrol", "rocketmotor", "titanium2", "vehiclemotor", "heatexchanger", 
     "bulb", "appliancea","atrazinejune","customerlife","bkfatigue10","chemicalprocess",
     "engineemissions","lzbearing","pipelinethickness","repairtimes","tractorbreaks","tree25years",
     "shockabsorber","v7tube"
-  )
+  ))
   
   datos <- reactive({
     if (input$data_input == "predefined") {
@@ -407,19 +407,19 @@ server <- function(input, output, session) {
     }
   })
   
-  output$col_response_ui <- renderUI({
-    req(datos())
-    choices <- colnames(datos())
-    choices <- c("No aplica", choices)
-    
-    fluidRow(
-      column(
-        width = 12,
-        selectInput("col_response", "Selecciona la columna que contiene la variable asociada al evento:",
-                    choices = choices, selected = choices[3])
-      )
-    )
-  })
+  # output$col_response_ui <- renderUI({
+  #   req(datos())
+  #   choices <- colnames(datos())
+  #   choices <- c("No aplica", choices)
+  #   
+  #   fluidRow(
+  #     column(
+  #       width = 12,
+  #       selectInput("col_response", "Selecciona la columna que contiene la variable asociada al evento:",
+  #                   choices = choices, selected = choices[3])
+  #     )
+  #   )
+  # })
   
   
   output$summary_output <- renderUI({
@@ -451,8 +451,8 @@ server <- function(input, output, session) {
     fluidRow(
       column(
         width = 12,
-        selectInput("col_respuesta", "Selecciona la columna de la respuesta:",
-                    choices = choices, selected = choices[2])
+        selectInput("col_respuesta", "Selecciona la(s) columna(s) de la respuesta:",
+                    choices = choices, multiple = T, selected = choices[2:3])
       )
     )
   })
@@ -493,7 +493,7 @@ server <- function(input, output, session) {
     fluidRow(
       column(
         width = 12,
-        selectInput("col_falla", "Selecciona la columna de la falla:",
+        selectInput("col_falla", "Selecciona la columna del modo de falla:",
                     choices = choices)
       )
     )
@@ -503,9 +503,10 @@ server <- function(input, output, session) {
     if (!is.null(datos())) {
       datos.ld <- SMRD::frame.to.ld(
         datos(),
-        response.column = if (input$col_respuesta != "No aplica") input$col_respuesta else NULL,
+        response.column = if(!("No aplica" %in% input$col_respuesta)) input$col_respuesta else NULL,
         censor.column = if (input$col_censura != "No aplica") input$col_censura else NULL,
-        case.weight.column = if (input$col_cantidad != "No aplica") input$col_cantidad else NULL
+        case.weight.column = if (input$col_cantidad != "No aplica") input$col_cantidad else NULL,
+        failure.mode.column = if (input$col_falla != "No aplica") input$col_falla else NULL
       )
       SMRD::event.plot(datos.ld)
     }
